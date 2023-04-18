@@ -3,20 +3,51 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+    });
+
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        // Set Axios request headers
+        const headers = {
+            "Content-Type": "application/json",
+        };
+        console.log(formData);
+
         try {
-            await axios.post("/login", { email, password });
-            setEmail("");
-            setPassword("");
-            navigate("/");
+            // Send POST request to register endpoint
+            const response = await axios.post(
+                "http://127.0.0.1:8000/api/login",
+                formData,
+                { headers }
+            );
+
+            // Handle response
+            if (response.status === 200) {
+                // Registration successful
+                console.log("Login successful");
+
+                // Reset form data
+                setFormData({
+                    email: "",
+                    password: "",
+                });
+                navigate("/");
+            } else {
+                // Registration failed
+                console.error("Login failed");
+            }
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
+    };
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     return (
@@ -29,7 +60,7 @@ const Login = () => {
                         </h1>
                         <form
                             className="space-y-4 md:space-y-6"
-                            onSubmit={handleLogin}
+                            onSubmit={handleSubmit}
                         >
                             <div>
                                 <label
@@ -39,11 +70,11 @@ const Login = () => {
                                     Your email
                                 </label>
                                 <input
-                                    value={email}
+                                    value={formData.email}
                                     type="email"
                                     name="email"
                                     id="email"
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={handleChange}
                                     className="bg-gray-50  border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-sky-400 focus:border-sky-400 border-2 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     placeholder="name@company.com"
                                     required=""
@@ -57,12 +88,10 @@ const Login = () => {
                                     Password
                                 </label>
                                 <input
-                                    value={password}
+                                    value={formData.password}
                                     type="password"
                                     name="password"
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
+                                    onChange={handleChange}
                                     id="password"
                                     placeholder="••••••••"
                                     className="bg-gray-50  border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-sky-400 focus:border-sky-400 border-2 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
