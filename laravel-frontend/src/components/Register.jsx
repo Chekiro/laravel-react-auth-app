@@ -8,50 +8,37 @@ const Register = () => {
         email: "",
         password: "",
     });
+    const [register, setRegister] = useState(false);
 
-    // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Get CSRF token from meta tag
-        const csrf_token = document
-            .querySelector('meta[name="csrf-token"]')
-            .getAttribute("content");
-
-        // Set Axios request headers
         const headers = {
             "Content-Type": "application/json",
         };
-        console.log(formData);
 
         try {
-            // Send POST request to register endpoint
             const response = await axios.post(
                 "http://127.0.0.1:8000/api/register",
                 formData,
                 { headers }
             );
 
-            // Handle response
             if (response.status === 201) {
-                // Registration successful
-                console.log("Registration successful");
-                // Reset form data
+                setRegister(true);
                 setFormData({
                     name: "",
                     email: "",
                     password: "",
                 });
             } else {
-                // Registration failed
-                console.error("Registration failed");
+                console.log("Register failed");
             }
         } catch (error) {
             console.error(error);
         }
     };
 
-    // Function to handle form input changes
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -61,6 +48,11 @@ const Register = () => {
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                 <div className="w-full bg-white rounded-lg shadow dark:border  md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+                        {register && (
+                            <h1 className="text-xl text-green-500 font-bold leading-tight tracking-tight">
+                                Registered successfully, sign in 😀!
+                            </h1>
+                        )}
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                             Sign in to your account
                         </h1>

@@ -2,47 +2,42 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Login = () => {
+const Login = ({ SetIsLoggedIn }) => {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
+    const [badLogin, setBadLogin] = useState(false);
 
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Set Axios request headers
+
         const headers = {
             "Content-Type": "application/json",
         };
-        console.log(formData);
 
         try {
-            // Send POST request to register endpoint
             const response = await axios.post(
                 "http://127.0.0.1:8000/api/login",
                 formData,
                 { headers }
             );
 
-            // Handle response
             if (response.status === 200) {
-                // Registration successful
-                console.log("Login successful");
-
-                // Reset form data
                 setFormData({
                     email: "",
                     password: "",
                 });
+                SetIsLoggedIn(true);
                 navigate("/");
             } else {
-                // Registration failed
                 console.error("Login failed");
             }
         } catch (error) {
             console.error(error);
+            setBadLogin(true);
         }
     };
 
@@ -55,6 +50,11 @@ const Login = () => {
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                 <div className="w-full bg-white rounded-lg shadow dark:border  md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+                        {badLogin && (
+                            <h1 className="text-xl text-red-500 font-bold leading-tight tracking-tight">
+                                Wrong password or email, please try again 😟
+                            </h1>
+                        )}
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                             Sign in to your account
                         </h1>
